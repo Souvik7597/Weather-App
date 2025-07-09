@@ -10,19 +10,16 @@ function unixToDateTime(unixTimestamp, format = 24) {
 
     let hours = date.getHours();
     const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
 
     const paddedMinutes = String(minutes).padStart(2, '0');
-    const paddedSeconds = String(seconds).padStart(2, '0');
 
     if (format === 12) {
-        const suffix = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12 || 12;
+        let hours = hours % 12 || 12;
         const paddedHours = String(hours).padStart(2, '0');
-        return `${paddedHours}:${paddedMinutes}:${paddedSeconds} ${suffix}`;
+        return `${paddedHours}:${paddedMinutes}`;
     } else {
         const paddedHours = String(hours).padStart(2, '0');
-        return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+        return `${paddedHours}:${paddedMinutes}`;
     }
 }
 
@@ -30,7 +27,7 @@ function unixToDateTime(unixTimestamp, format = 24) {
 
 const API_KEY = "6dfece27ee79becc94237671ae4a357e"
 
-const createWeatherCard = (cityName, weatherItem, index, city= null) => {
+const createWeatherCard = (cityName, weatherItem, index, city = null) => {
     if (index === 0) {
         console.log(city)
         return `<div class="details">
@@ -59,10 +56,10 @@ const createWeatherCard = (cityName, weatherItem, index, city= null) => {
 }
 
 const getWeatherDetails = (cityName, lat, lon) => {
-    const WEATHER_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`
+    const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`
 
     fetch(WEATHER_API_URL).then(res => res.json()).then(data => {
-console.log(data);
+        
         const uniqueForecastDays = []
         const fiveDaysForecast = data.list.filter(forecast => {
             const forecastDate = new Date(forecast.dt_txt).getDate()
@@ -71,7 +68,6 @@ console.log(data);
             }
         })
 
-        console.log(fiveDaysForecast);
 
         cityInput.value = "";
         currentWeather.innerHTML = "";
@@ -94,12 +90,12 @@ searchButton.addEventListener("click", () => {
     const cityName = cityInput.value.trim();
     if (!cityName) return
 
-    const GECODING_WEATHER_API_URL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`
+    const GECODING_WEATHER_API_URL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`
 
     fetch(GECODING_WEATHER_API_URL).then(res => res.json()).then(data => {
         if (!data.length) return alert(`No coordinates found for ${cityName}`)
         const { name, lat, lon } = data[0]
-    
+
         getWeatherDetails(name, lat, lon)
     }).catch(() => {
         alert("An error occured while fetching the coordinates!")
@@ -111,9 +107,9 @@ locationButton.addEventListener("click", () => {
         position => {
             const { latitude, longitude } = position.coords;
 
-            const REVERSE_GEOCODING_URL = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`
+            const REVERSE_GEOCODING_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`
             fetch(REVERSE_GEOCODING_URL).then(res => res.json()).then(data => {
-                const { name} = data[0]
+                const { name } = data[0]
                 getWeatherDetails(name, latitude, longitude)
             }).catch(() => {
                 alert("An error occured while fetching the city!")

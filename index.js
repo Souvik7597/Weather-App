@@ -5,7 +5,6 @@ const currentWeather = document.querySelector(".current-weather")
 const weatherCards = document.querySelector(".weather-cards")
 
 function unixToDateTime(unixTimestamp, format = 24) {
-    // Convert from seconds to milliseconds
     const date = new Date(unixTimestamp * 1000);
 
     let hours = date.getHours();
